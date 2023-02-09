@@ -8,6 +8,7 @@ import (
 
 func LPN_Check(LPN string) bool {
 
+	// Create an array with pre-defined values
 	var LPN_Array = []string{
 		"ACB-34-1",
 		"DCE-43-2",
@@ -15,6 +16,7 @@ func LPN_Check(LPN string) bool {
 		"IJK-65-4",
 		"LMN-78-5"}
 
+	// For loop, for each value in LPN_Array check if they are equal to the LPN and if so return "true", if not return "false"
 	for _, value := range LPN_Array {
 		if value == LPN {
 			return true
@@ -70,12 +72,12 @@ func main() {
 	fmt.Scanln(&LPN)
 
 	if LPN_Check(LPN) {
-		//Print uit the message
+		//Give the current time to the DayPart function and print out what it returns
 		fmt.Println(DayPart(Current_Time))
 	}
 
 	if !LPN_Check(LPN) {
-		//Print uit the message
+		//Print out the following message
 		fmt.Println("U heeft helaas geen toegang tot het parkeerterrein")
 	}
 }
