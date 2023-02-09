@@ -6,9 +6,26 @@ import (
 	"time"
 )
 
+func LPN_Check(LPN string) bool {
+
+	var LPN_Array = []string{
+		"ACB-34-1",
+		"DCE-43-2",
+		"FGH-56-3",
+		"IJK-65-4",
+		"LMN-78-5"}
+
+	for _, value := range LPN_Array {
+		if value == LPN {
+			return true
+		}
+	}
+	return false
+}
+
 func DayPart(cTime string) string {
 	// Welkom Message
-	var Msg string = "[groet]! Welkom bij Fonteyn Vakantieparken"
+	var Msg string = "[groet]! Welkom bij Fonteyn Vakantieparken."
 
 	// Make an empty variable that will later be used to define the daypart
 	var Greeting string = ""
@@ -45,6 +62,20 @@ func main() {
 	// Get the current time in 24hr format
 	var Current_Time string = time.Now().Format("15:04:05")
 
-	//Print uit the message
-	fmt.Println(DayPart(Current_Time))
+	// Make an empty variable that will later be used to define the license plate number
+	var LPN string
+
+	// Ask the user for a license plate number and save the input in the variable "LPN"
+	fmt.Println("Vul hier het kenteken van uw auto in:")
+	fmt.Scanln(&LPN)
+
+	if LPN_Check(LPN) {
+		//Print uit the message
+		fmt.Println(DayPart(Current_Time))
+	}
+
+	if !LPN_Check(LPN) {
+		//Print uit the message
+		fmt.Println("U heeft helaas geen toegang tot het parkeerterrein")
+	}
 }
