@@ -1,29 +1,85 @@
 package main
 
 import (
+	"database/sql"
 	"flag"
 	"fmt"
+	"log"
 	"math/rand"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
-var BaseString string = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+// DB Login Details
+const (
+	dbname = "Password_Generator"
+	dbuser = "pg"
+	dbpass = "E!j2zZ9!bVg4h3yd"
+)
 
-func Randomize(n int) string {
-	b := make([]byte, n)
-	for i := range b {
-		b[i] = BaseString[rand.Intn(len(BaseString))]
+// Function that will add a new password (or not)
+func DB(NewPwd string) string {
+	// Make a connection to the DB
+	db, err := sql.Open("mysql", dbuser+":"+dbpass+"@/"+dbname)
+
+	// If an error occured, show it
+	if err != nil {
+		log.Fatal(err)
 	}
-	return string(b)
+
+	// Peform a GET from the DB to check if the new password already exists
+	result, err := db.Query("SELECT Password FROM `passwords` WHERE Password = '" + NewPwd + "'; ")
+
+	// If an error occured, show it
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// If the GET query returned a row (which means the password exists in DB), stop the function and return a MSG
+	if result.Next() {
+		fmt.Println("Password already exists in the Database")
+		return ""
+	}
+
+	// Peform a INSERT to the DB, will add the new password to the DB
+	insert, err := db.Query("INSERT INTO `passwords` (`id`, `Password`) VALUES (NULL, '" + NewPwd + "');")
+
+	// If an error occured, show it
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Close the connection to the row
+	defer insert.Close()
+
+	// Print out a msg that confirms that a new password has been added
+	fmt.Println("Password has been added to the Database")
+
+	// Return NULL
+	return ""
 }
 
+// variable for the base string that will be used to generate a password
+var BaseString string = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+// Function to randomize the password string
+func Randomize(length int) string {
+	char := make([]byte, length)
+	for i := range char {
+		char[i] = BaseString[rand.Intn(len(BaseString))]
+	}
+	return string(char)
+}
+
+// Main
 func main() {
 	// Msg that informs the user of what there password is
 	var msg string = "Your password is: "
 
-	//Flag that defines the length of the password
+	// Flag that defines the length of the password
 	Length := flag.Int("L", 16, "How long should the password be? (Default value: 16)")
 
-	//Flag that defines what should be included in the password
+	// Flag that defines what should be included in the password
 	Numbers := flag.Bool("n", false, "Should numbers be used? (Default value: False)")
 	Logograms := flag.Bool("l", false, "Should logograms be used? (Default value: False)")
 	Punctuations := flag.Bool("p", false, "Should punctuation be used? (Default value: False)")
@@ -70,6 +126,12 @@ func main() {
 		BaseString = BaseString + "{[()]}"
 	}
 
-	//Print out the password
-	fmt.Println(msg, Randomize(*Length))
+	// Print out the password
+	NewPassword := Randomize(*Length)
+
+	// Print a msg with the new password
+	fmt.Println(msg, NewPassword)
+
+	// Run the DB function with the new password
+	DB(NewPassword)
 }
