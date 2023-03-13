@@ -1,6 +1,6 @@
 Do to issues with the export I could not make an export thats not plain text, the database can be recreated by using the following commands:
 
-- Make a Databae with the name: 'password_generator'
+- Make a Database with the name: 'password_generator'
 - Run the following in the database: 
  1).   
     CREATE TABLE `passwords` (
